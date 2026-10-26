@@ -1,12 +1,29 @@
+// Initialisation de Supabase
+const SUPABASE_URL = 'https://xnydshxchpfjyuysvgv.supabase.co';
+const SUPABASE_ANON_KEY = 'VOTRE_CLE_ANON'; // Pensez à mettre votre clé anon ici
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 document.addEventListener('DOMContentLoaded', () => {
     const sendButton = document.querySelector('.message-input button');
     const messageInput = document.querySelector('.message-input input');
     const messagesContainer = document.querySelector('.messages-container');
 
-    function sendMessage() {
+    async function sendMessage() {
         const messageText = messageInput.value.trim();
         if (messageText !== '') {
-            // Créer le nouvel élément de message
+            
+            // 1. Enregistrement dans Supabase (table "messages")
+            const { data, error } = await supabase
+                .from('messages')
+                .insert([{ content: messageText }]);
+
+            if (error) {
+                console.error("Erreur lors de l'envoi du message :", error.message);
+            } else {
+                console.log("Message sauvegardé dans Supabase !", data);
+            }
+
+            // 2. Création visuelle du message à l'écran (votre code d'origine)
             const newMessageDiv = document.createElement('div');
             newMessageDiv.classList.add('message', 'sent');
 
@@ -15,18 +32,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
             newMessageDiv.appendChild(paragraph);
             messagesContainer.appendChild(newMessageDiv);
+
             const timestamp = document.createElement('span');
-const now = new Date();
-timestamp.textContent = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-timestamp.style.fontSize = '10px';
-timestamp.style.color = '#777';
-timestamp.style.display = 'block';
-timestamp.style.marginTop = '5px';
-timestamp.style.textAlign = 'right';
-newMessagesDiv.appendChild(timestamp);
+            const now = new Date();
+            timestamp.textContent = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+            timestamp.style.fontSize = '10px';
+            timestamp.style.color = '#777';
+            timestamp.style.display = 'block';
+            timestamp.style.marginTop = '5px';
+            timestamp.style.textAlign = 'right';
+            newMessageDiv.appendChild(timestamp);
 
             // Vider le champ de saisie
-
             messageInput.value = '';
 
             // Faire défiler vers le bas
@@ -35,12 +52,16 @@ newMessagesDiv.appendChild(timestamp);
     }
 
     // Clic sur le bouton Envoyer
-    sendButton.addEventListener('click', sendMessage);
+    if (sendButton) {
+        sendButton.addEventListener('click', sendMessage);
+    }
 
     // Envoi avec la touche Entrée
-    messageInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            sendMessage();
-        }
-    });
+    if (messageInput) {
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    }
 });
