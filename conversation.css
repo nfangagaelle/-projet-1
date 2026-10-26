@@ -1,0 +1,49 @@
+/* Container des messages */
+.messages-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    overflow-y: auto;
+}
+
+/* Bulle de message générale */
+.message {
+    max-width: 60%;
+    padding: 10px 15px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+/* Message reçu (gauche, gris) */
+.message.received {
+    align-self: flex-start;
+    background-color: #e4e6eb;
+    color: #050505;
+    border-bottom-left-radius: 4px;
+}
+
+/* Message envoyé (droite, bleu) */
+.message.sent {
+    align-self: flex-end;
+    background-color: #0084ff;
+    color: #ffffff;
+    border-bottom-right-radius: 4px;
+}
+.status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.online {
+    background-color: #4CAF50;
+}
+
+.offline {
+    background-color: #9E9E9E;
+}

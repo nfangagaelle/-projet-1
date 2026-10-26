@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messagerie</title>
+    <link rel="stylesheet" href="conversation.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="search-bar">
+                <input type="text" placeholder="Rechercher...">
+            </div>
+            <div class="contacts-list">
+                <h2>Contacts</h2>
+                <ul>
+                    <li><span class="status-indicator online"></span>Ferdinand</li>
+                    <li><span class="status-indicator offline"></span>Cedric</li>
+                </ul>
+            </div>
+            <div class="conversations-list">
+                <h2>Salons</h2>
+                <ul>
+                    <li class="active">Kaela & Kaely</li>
+                </ul>
+            </div>
+        </div>
+        <div class="chat-area">
+            <div class="chat-header">
+                <h2>Kaela & Kaely</h2>
+            </div>
+            <div class="messages-container">
+                <div class="message received">Salut !</div>
+                <div class="message sent">Salut ! Ça va bien et toi ?</div>
+            </div>
+            <div class="message-input">
+                <input type="text" placeholder="Écrire un message...">
+                <button type="submit">Envoyer</button>
+            </div>
+            <script src="script.js"></script>
+        </div>
+    </div>
+</body>
+</html>
