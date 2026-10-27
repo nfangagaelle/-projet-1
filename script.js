@@ -1,6 +1,6 @@
 (function(){
 // Initialisation de Supabase
-const SUPABASE_URL ='https://xnydshxchpfjyuyqsvgv.supabase.co';
+const SUPABASE_URL = 'https://xnydshxchpfjyuyqsvgv.supabase.co';
 const SUPABASE_ANON_KEY ='sb_publishable_A7j0QW8H021_zeKcw3yUyA_8J1LZpZq'; // Pensez à mettre votre clé anon ici
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
