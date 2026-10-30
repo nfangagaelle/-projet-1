@@ -1,69 +1,73 @@
 (function(){
-// Initialisation de Supabase
-const SUPABASE_URL = 'https://xnydshxchpfjyuyqsvgv.supabase.co';
-const SUPABASE_ANON_KEY ='sb_publishable_A7j0QW8H021_zeKcw3yUyA_8J1LZpZq'; // Pensez à mettre votre clé anon ici
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+ const SUPABASE_URL = 'https://xnydshxchpfjyuyqsgvg.supabase.co';
+ const SUPABASE_ANON_KEY = 'sb_publishable_A7j00W8H021_zeKcw3yUyA_83ILzpZq';
+ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-document.addEventListener('DOMContentLoaded', () => {
-    const sendButton = document.querySelector('.message-input button');
-    const messageInput = document.querySelector('.message-input input');
-    const messagesContainer = document.querySelector('.messages-container');
+ document.addEventListener('DOMContentLoaded', () => {
+    const sendButton = document.querySelector('.message-input button') || document.querySelector('button');
+    const messageInput = document.querySelector('.message-input input') || document.querySelector('input[type="text"]');
+    const messagesContainer = document.querySelector('.messages-container') || document.querySelector('.messages');
+    const titleElement = document.querySelector('.chat-header h2, h2, .header h3');
+    
+    // On prend le titre actuel comme salon par défaut
+    let CURRENT_SALON = titleElement ? titleElement.textContent.trim() : 'Kaela & Kaely';
+    let currentChannel = null;
+
+    let myId = localStorage.getItem('myId');
+    if (!myId) { myId = 'user_' + Math.random().toString(36).substr(2,9); localStorage.setItem('myId', myId); }
+
+    function afficherMessage(content, senderId, isSent) {
+        const div = document.createElement('div');
+        div.className = 'message ' + (isSent ? 'sent' : 'received');
+        const p = document.createElement('p'); p.textContent = content; div.appendChild(p);
+        messagesContainer.appendChild(div);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    async function loadMessages() {
+        messagesContainer.innerHTML = '';
+        const { data } = await supabase.from('messages').select('*').eq('salon', CURRENT_SALON).order('created_at', {ascending:true});
+        if(data) data.forEach(msg => afficherMessage(msg.content, msg.sender_id, msg.sender_id === myId));
+    }
+
+    function subscribeSalon() {
+        if(currentChannel) supabase.removeChannel(currentChannel);
+        currentChannel = supabase.channel('chat-'+CURRENT_SALON).on('postgres_changes', {event:'INSERT', schema:'public', table:'messages', filter:`salon=eq.${CURRENT_SALON}`}, payload => {
+            if(payload.new.sender_id === myId) return;
+            afficherMessage(payload.new.content, payload.new.sender_id, false);
+        }).subscribe();
+    }
 
     async function sendMessage() {
-        const messageText = messageInput.value.trim();
-        if (messageText !== '') {
-            
-            // 1. Enregistrement dans Supabase (table "messages")
-            const { data, error } = await supabase
-                .from('messages')
-                .insert([{ content: messageText }]);
-
-            if (error) {
-                console.error("Erreur lors de l'envoi du message :", error.message);
-            } else {
-                console.log("Message sauvegardé dans Supabase !", data);
-            }
-
-            // 2. Création visuelle du message à l'écran (votre code d'origine)
-            const newMessageDiv = document.createElement('div');
-            newMessageDiv.classList.add('message', 'sent');
-
-            const paragraph = document.createElement('p');
-            paragraph.textContent = messageText;
-
-            newMessageDiv.appendChild(paragraph);
-            messagesContainer.appendChild(newMessageDiv);
-
-            const timestamp = document.createElement('span');
-            const now = new Date();
-            timestamp.textContent = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-            timestamp.style.fontSize = '10px';
-            timestamp.style.color = '#777';
-            timestamp.style.display = 'block';
-            timestamp.style.marginTop = '5px';
-            timestamp.style.textAlign = 'right';
-            newMessageDiv.appendChild(timestamp);
-
-            // Vider le champ de saisie
-            messageInput.value = '';
-
-            // Faire défiler vers le bas
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
+        const txt = messageInput.value.trim(); if(!txt) return;
+        afficherMessage(txt, myId, true); messageInput.value = '';
+        await supabase.from('messages').insert([{ content: txt, salon: CURRENT_SALON, sender_id: myId }]);
     }
 
-    // Clic sur le bouton Envoyer
-    if (sendButton) {
-        sendButton.addEventListener('click', sendMessage);
-    }
-
-    // Envoi avec la touche Entrée
-    if (messageInput) {
-        messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                sendMessage();
+    // --- CLIC SUR CONTACTS ET SALONS ---
+    function setupClicks() {
+        // Trouve tous les éléments qui contiennent Ferdinand, Cedric, Kaela
+        const allItems = document.querySelectorAll('li, div, span, p, a');
+        allItems.forEach(el => {
+            const text = el.textContent.trim();
+            if (text === 'Ferdinand' || text === 'Cédric' || text === 'Cedric' || text === 'Kaela & Kaely') {
+                el.style.cursor = 'pointer';
+                el.addEventListener('click', () => {
+                    CURRENT_SALON = text === 'Cedric' ? 'Cédric' : text;
+                    if(titleElement) titleElement.textContent = CURRENT_SALON;
+                    console.log("Changement vers:", CURRENT_SALON);
+                    loadMessages();
+                    subscribeSalon();
+                });
             }
         });
     }
-});
+
+    if (sendButton) sendButton.addEventListener('click', sendMessage);
+    if (messageInput) messageInput.addEventListener('keypress', e => { if(e.key === 'Enter') sendMessage(); });
+
+    setupClicks();
+    loadMessages();
+    subscribeSalon();
+ });
 })();
