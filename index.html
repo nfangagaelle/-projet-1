@@ -64,5 +64,12 @@
     <!-- Charger votre script après le CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="inscription.js"></script>
+   <p id="message" style="color:green; font-weight:bold;"></p>
+
+<script>
+  document.getElementById('btn-inscrire').addEventListener('click', function() {
+    document.getElementById('message').textContent = "Bravo ! Bienvenue ! 🎉";
+  });
+</script> 
 </body>
 </html>
