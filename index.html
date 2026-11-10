@@ -5,73 +5,38 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Inscription</title>
 <style>
-body {
-  background: linear-gradient(135deg, #ff9a9e, #a18cd1);
-  font-family: Arial, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-}
-.carte {
-  background: white;
-  padding: 30px;
-  border-radius: 20px;
-  width: 300px;
-  text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
-h1 { color: #ff5e8a; }
-input {
-  width: 90%;
-  padding: 12px;
-  margin: 8px 0;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-}
-button {
-  width: 100%;
-  padding: 13px;
-  background: #ff5e8a;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
-  font-size: 16px;
-  cursor: pointer;
-}
+body { background: linear-gradient(135deg, #ff9a9e, #a18cd1); font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+.card { background: white; padding: 30px; border-radius: 15px; width: 320px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+input { width: 90%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; }
+button { width: 100%; padding: 12px; background: #ff5e8a; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; }
+a { color: #ff5e8a; text-decoration: none; font-size: 14px; }
+#message { margin-top: 10px; font-weight: bold; }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<div class="carte">
-<h1>Inscription</h1>
-<form>
-<label>Nom d'utilisateur</label><br>
-<input type="text" id="username" required><br>
-<label>Mot de passe</label><br>
-<input type="password" id="password" required><br><br>
-<button type="button" id="btn-inscrire">s'inscrire</button>
+<div class="card">
+<h2>Inscription</h2>
+<input type="text" id="username" placeholder="Nom d'utilisateur">
+<input type="password" id="password" placeholder="Mot de passe">
+<button onclick="inscrire()">S'inscrire</button>
 <p id="message"></p>
-</form>
+<p>Déjà un compte ? <a href="connexion.html">Se connecter</a></p>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL = "https://xnydshxchpfjuyuqsvgv.supabase.co";
-const SUPABASE_KEY = "sb_publishable_A7j0QW8H021_zeKcw3yUyA_8J1LZpZq";
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-document.getElementById('btn-inscrire').addEventListener('click', async function(){
-  const nom = document.getElementById('username').value;
-  const mdp = document.getElementById('password').value;
-  document.getElementById('message').textContent = "Envoi...";
-  const { error } = await supabaseClient.from('utilisateurs').insert([{ username: nom, password: mdp }]);
-  if(error){
-    document.getElementById('message').textContent = "Erreur : " + error.message;
-  } else {
-    document.getElementById('message').textContent = "Bravo ! Bienvenue ! 🎉";
-  }
-});
+const SUPABASE_URL = "https://xnydshxchpfjuyqsvgv.supabase.co";
+const SUPABASE_KEY = "sb_publishable_A7jQ0WBH021_zeKcw3yUyA_83JlZpZq";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+async function inscrire() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  const msg = document.getElementById("message");
+  if (!username || !password) { msg.textContent = "Remplis tout !"; return; }
+  msg.textContent = "Envoi...";
+  const { error } = await supabaseClient.from("utilisateurs").insert([{ username: username, password: password }]);
+  if (error) { msg.textContent = "Erreur : " + error.message; }
+  else { msg.textContent = "Bravo ! Bienvenue !"; setTimeout(() => { window.location.href = "accueil.html?nom=" + username; }, 1000); }
+}
 </script>
 </body>
 </html>
