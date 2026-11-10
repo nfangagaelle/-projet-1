@@ -1,4 +1,4 @@
-# Projet-1 : Site d'Inscription# Projet-1 : Site d'Inscription
+# Projet-1 : Site d'Inscription
 
 ## C'est quoi ce projet ?
 C'est un site web qui permet à un utilisateur de s'inscrire avec un nom d'utilisateur et un mot de passe.
