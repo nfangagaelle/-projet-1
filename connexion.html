@@ -12,20 +12,18 @@
 <p id="message"></p>
 <p>Pas de compte ? <a href="index.html">S'inscrire</a></p>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL = "https://xnydshxchpfjuyqsvgv.supabase.co";
-const SUPABASE_KEY = "sb_publishable_A7jQ0WBH021_zeKcw3yUyA_83JlZpZq";
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const SUPABASE_KEY = "sb_publishable_A7j0QW8H021_zeKcw3yUyA_8J1LZpZq";
 async function connecter(){
   const username=document.getElementById("username").value;
   const password=document.getElementById("password").value;
   const msg=document.getElementById("message");
-  msg.textContent="Vérification...";
-  const {data,error}=await supabaseClient.from("utilisateurs").select("*").eq("username",username).eq("password",password);
-  if(error){msg.textContent="Erreur : "+error.message;}
-  else if(data.length===0){msg.textContent="Nom ou mot de passe faux !";}
-  else{msg.textContent="Bienvenue "+username+" !"; setTimeout(()=>{window.location.href="accueil.html?nom="+username;},1000);}
+  const vrai = localStorage.getItem("user_"+username);
+  if(vrai === null){msg.textContent="Ce compte n'existe pas, inscris-toi d'abord !"; return;}
+  if(vrai !== password){msg.textContent="Mot de passe faux !"; return;}
+  msg.textContent="Bienvenue "+username+" !";
+  setTimeout(()=>{window.location.href="accueil.html?nom="+username;},1000);
 }
 </script>
 </body>
